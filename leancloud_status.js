@@ -1,0 +1,59 @@
+const fs = require('fs');
+const got = require('got');
+const Git = require('simple-git/promise');
+
+(async () => {
+    const data = await got.get('https://s3.cn-north-1.amazonaws.com.cn/leancloud-status/events.json').json();
+    const events = data.events.slice(0, 5);
+
+    const workDir = '/tmp';
+    const userName = process.env.GITHUB_USER_NAME;
+    const userEmail = process.env.GITHUB_USER_EMAIL;
+    const password = process.env.GITHUB_PASSWORD;
+    const repoName = 'db1';
+    const filePath = `${workDir}/${repoName}/leancloud_status.json`;
+
+    if (!fs.existsSync(`${workDir}/${repoName}`)) {
+        const remote = `https://${userName}:${password}@github.com/${userName}/${repoName}`;
+        let git = Git(workDir);
+        await git.silent(false);
+        await git.clone(remote);   
+    }
+
+    let newEvents = [];
+    let dbData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+
+    for (let event of events) {
+        const index = dbData.findIndex((item) => {
+            return item.time === event.time && item.content === event.content;
+        });
+
+        if (index === -1) {
+            newEvents.push({
+                time: event.time,
+                content: event.content,
+            });
+        }
+    }
+
+    if (newEvents.length > 0) {
+        let data = newEvents.concat(dbData);
+        if (data.length > 100) {
+            data = data.slice(0, 50);
+        }
+
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+
+        let git = Git(`${workDir}/${repoName}`);
+        await git.silent(false);
+        await git.addConfig('user.name', userName);
+        await git.addConfig('user.email', userEmail);
+        await git.add('*');
+        await git.commit('update leancloud status');
+        await git.push('origin');
+
+        for (let event of newEvents) {
+            got.get(process.env.NOTIFICATION_URL + encodeURIComponent('LeanCloud Status') + '/' + encodeURIComponent(event.content));
+        }
+    }
+});
