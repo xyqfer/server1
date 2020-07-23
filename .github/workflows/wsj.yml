@@ -2,7 +2,7 @@ name: WSJ Cron
 
 on:
   schedule:
-    - cron: "*/20 0-15 * * *"
+    - cron: "*/22 0-15 * * *"
 
 jobs:
   build:

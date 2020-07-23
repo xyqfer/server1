@@ -1,5 +1,6 @@
 const fs = require('fs');
 const got = require('got');
+const _ = require('lodash');
 const Git = require('simple-git/promise');
 
 const sendNotification = (title = '', content = '') => {
@@ -45,7 +46,7 @@ const getNewData = (oldData = [], newData = [], keys = []) => {
         }
     }
 
-    return res;
+    return _.uniqBy(res, keys[0]);
 };
 
 module.exports = {
