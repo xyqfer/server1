@@ -2,13 +2,9 @@ const fs = require('fs');
 const got = require('got');
 const Git = require('simple-git/promise');
 
-console.log('start');
-
 (async () => {
     const data = await got.get('https://s3.cn-north-1.amazonaws.com.cn/leancloud-status/events.json').json();
     const events = data.events.slice(0, 5);
-
-    console.log('get event data');
 
     const workDir = '/tmp';
     const userName = process.env.GIT_USER_NAME;
@@ -27,8 +23,6 @@ console.log('start');
     let newEvents = [];
     let dbData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
-    console.log('get db data');
-
     for (let event of events) {
         const index = dbData.findIndex((item) => {
             return item.time === event.time && item.content === event.content;
@@ -42,11 +36,7 @@ console.log('start');
         }
     }
 
-    console.log('after filter');
-
     if (newEvents.length > 0) {
-        console.log('begin commit')
-
         let data = newEvents.concat(dbData);
         if (data.length > 100) {
             data = data.slice(0, 50);
@@ -62,12 +52,8 @@ console.log('start');
         await git.commit('update leancloud status');
         await git.push('origin');
 
-        console.log('after commit');
-
         for (let event of newEvents) {
             got.get(process.env.NOTIFICATION_URL + encodeURIComponent('LeanCloud Status') + '/' + encodeURIComponent(event.content));
         }
-
-        console.log('after push');
     }
-});
+})();
