@@ -1,40 +1,23 @@
 const fs = require('fs');
 const got = require('got');
-const Git = require('simple-git/promise');
+const utils = require('./utils');
 
 (async () => {
     const data = await got.get('https://s3.cn-north-1.amazonaws.com.cn/leancloud-status/events.json').json();
-    const events = data.events.slice(0, 5);
+    const events = data.events.slice(0, 5).map((item) => {
+        return {
+            time: item.time,
+            content: item.content,
+        };
+    });
 
-    const workDir = '/tmp';
-    const userName = process.env.GIT_USER_NAME;
-    const userEmail = process.env.GIT_USER_EMAIL;
-    const password = process.env.GIT_PASSWORD;
     const repoName = 'db1';
-    const filePath = `${workDir}/${repoName}/leancloud_status.json`;
+    const filePath = `${utils.DB_ROOT}/${repoName}/leancloud_status.json`;
 
-    if (!fs.existsSync(`${workDir}/${repoName}`)) {
-        const remote = `https://${userName}:${password}@github.com/${userName}/${repoName}`;
-        let git = Git(workDir);
-        await git.silent(false);
-        await git.clone(remote);   
-    }
+    await utils.initDb(repoName);
 
-    let newEvents = [];
     let dbData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-
-    for (let event of events) {
-        const index = dbData.findIndex((item) => {
-            return item.time === event.time && item.content === event.content;
-        });
-
-        if (index === -1) {
-            newEvents.push({
-                time: event.time,
-                content: event.content,
-            });
-        }
-    }
+    let newEvents = utils.getNewData(dbData, events, ['time', 'event']);
 
     if (newEvents.length > 0) {
         let data = newEvents.concat(dbData);
@@ -43,17 +26,10 @@ const Git = require('simple-git/promise');
         }
 
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-
-        let git = Git(`${workDir}/${repoName}`);
-        await git.silent(false);
-        await git.addConfig('user.name', userName);
-        await git.addConfig('user.email', userEmail);
-        await git.add('*');
-        await git.commit('update leancloud status');
-        await git.push('origin');
+        await utils.commitDb(repoName, 'update leancloud status');
 
         for (let event of newEvents) {
-            got.get(process.env.NOTIFICATION_URL + encodeURIComponent('LeanCloud Status') + '/' + encodeURIComponent(event.content));
+            utils.sendNotification('LeanCloud Status', event.content);
         }
     }
 })();
