@@ -21,3 +21,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm i
     - run: node leancloud_status.js
+      env:
+        GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+        GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+        GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+        NOTIFICATION_URL: ${{ secrets.NOTIFICATION_URL }}
