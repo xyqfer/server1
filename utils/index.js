@@ -7,7 +7,7 @@ const sendNotification = (title = '', content = '') => {
 };
 
 const DB_ROOT = '/tmp';
-const { GIT_USER_NAME, GIT_USER_EMAIL, GIT_PASSWORD } = process.env.GIT_USER_NAME;
+const { GIT_USER_NAME, GIT_USER_EMAIL, GIT_PASSWORD } = process.env;
 
 const initDb = async (repoName) => {
     if (!fs.existsSync(`${DB_ROOT}/${repoName}`)) {
