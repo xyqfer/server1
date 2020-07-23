@@ -7,9 +7,9 @@ const Git = require('simple-git/promise');
     const events = data.events.slice(0, 5);
 
     const workDir = '/tmp';
-    const userName = process.env.GITHUB_USER_NAME;
-    const userEmail = process.env.GITHUB_USER_EMAIL;
-    const password = process.env.GITHUB_PASSWORD;
+    const userName = process.env.GIT_USER_NAME;
+    const userEmail = process.env.GIT_USER_EMAIL;
+    const password = process.env.GIT_PASSWORD;
     const repoName = 'db1';
     const filePath = `${workDir}/${repoName}/leancloud_status.json`;
 
