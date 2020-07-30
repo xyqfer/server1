@@ -24,8 +24,8 @@ const utils = require('./utils');
             return item.link;
         });
         let data = list.concat(dbData);
-        if (data.length > 100) {
-            data = data.slice(0, 50);
+        if (data.length > 200) {
+            data = data.slice(0, 100);
         }
 
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
