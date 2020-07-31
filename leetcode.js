@@ -17,11 +17,11 @@ const lark = require('./utils/lark');
         lark.sendPost(process.env.LARK_USER, {
             title: '',
             content: [
-                {
+                [{
                     tag: 'a',
                     text: title,
                     href: link,
-                }
+                }]
             ]
         });
     }

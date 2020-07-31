@@ -2,7 +2,7 @@ name: LeetCode Cron
 
 on:
   schedule:
-    - cron: "*/3 0-15 * * *"
+    - cron: "16 4 * * *"
 
 jobs:
   build:
