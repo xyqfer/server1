@@ -15,7 +15,7 @@ const getToken = async () => {
     return resp.body.tenant_access_token;
 };
 
-const send = async (user, msg) => {
+const sendText = async (user, msg) => {
     if (!token) {
         token = await getToken();
     }
@@ -35,6 +35,29 @@ const send = async (user, msg) => {
     });
 };
 
+const sendPost = async (user, msg) => {
+    if (!token) {
+        token = await getToken();
+    }
+
+    await got.post('https://open.larksuite.com/open-apis/message/v4/send/', {
+        json: {
+            email: user,
+            msg_type: 'post',
+            content: {
+                post: {
+                    "zh_cn": msg,
+                },
+            },
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        responseType: 'json',
+    });
+};
+
 module.exports = {
-    send,
+    sendText,
+    sendPost,
 };

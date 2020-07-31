@@ -57,6 +57,6 @@ const lark = require('./utils/lark');
         2楼
         ${item.reply[1]}
         `;
-        lark.send(process.env.LARK_USER, msg);
+        lark.sendText(process.env.LARK_USER, msg);
     }
 })();
