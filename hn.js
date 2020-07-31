@@ -40,23 +40,15 @@ const lark = require('./utils/lark');
     }).get().slice(start, start + 2);
 
     for (let item of list) {
-        const response = await got.get(`${process.env.API_HOST}/api/v1/hn/item?id=${item.id}`, {
-            responseType: 'json',
+        lark.sendPost(process.env.LARK_USER, {
+            title: item.title,
+            content: [
+                [{
+                    tag: 'a',
+                    text: '[链接]',
+                    href: `${process.env.API_HOST}/hn/m/#!/item/${item.id}`,
+                }]
+            ]
         });
-
-        item.reply = response.body.data.comments.map((item) => {
-            const $ = cheerio.load(item.text);
-            return cheerio.text($('body'));
-        });
-
-        const msg = `${item.title}
-        
-        1楼
-        ${item.reply[0]}
-
-        2楼
-        ${item.reply[1]}
-        `;
-        lark.sendText(process.env.LARK_USER, msg);
     }
 })();
