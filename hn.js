@@ -31,7 +31,7 @@ const lark = require('./utils/lark');
     let list = $('ul > li').map(function() {
         const $item = $(this);
         const title = $item.find('.storylink > a').text();
-        const { id } = url.parse($item.find('.commentlink > a').attr('href'), true).query;
+        const { id } = url.parse($item.find('.postlink > a').attr('href'), true).query;
 
         return {
             title,
