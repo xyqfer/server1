@@ -1,7 +1,7 @@
 const url = require('url');
 const cheerio = require('cheerio');
 const got = require('got');
-const lark = require('utils/lark');
+const lark = require('./utils/lark');
 
 (async () => {
     const yesterday = new Date(Date.now() - (25 * 60 * 60 * 1000));
