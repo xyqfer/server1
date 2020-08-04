@@ -12,7 +12,7 @@ const lark = require('./utils/lark');
         const index = Math.floor(Math.random() * count);
         const $item = $items.eq(index).find('.entrylistItemTitle');
         const link = $item.attr('href');
-        const title = $item.text();
+        const title = $item.text().trim();
 
         lark.sendPost(process.env.LARK_USER, {
             title: '',
