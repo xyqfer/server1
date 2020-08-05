@@ -20,7 +20,7 @@ const utils = require('./utils');
     }
 
     if (newData.length > 0) {
-        newData = newData.slice(0, 3);
+        newData = newData.slice(0, 2);
         
         let list = newData.map((item) => {
             return item.link;
