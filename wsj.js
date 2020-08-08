@@ -22,7 +22,7 @@ const translate = require('./utils/deepl');
     }
 
     if (newData.length > 0) {
-        newData = newData.slice(0, 2);
+        newData = newData.slice(0, 3);
         
         let list = newData.map((item) => {
             return item.link;
