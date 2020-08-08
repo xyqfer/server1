@@ -36,7 +36,13 @@ const translate = require('./utils/deepl');
         await utils.commitDb(repoName, 'update wsj');
 
         for (let item of newData) {
-            const zhText = await translate(item.title);
+            let zhText;
+            try {
+                zhText = await translate(item.title);
+            } catch(err) {
+                console.log(err);
+                zhText = '';
+            }
 
             lark.sendPost(process.env.LARK_USER, {
                 title: '',
