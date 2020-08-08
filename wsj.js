@@ -2,6 +2,8 @@ const fs = require('fs');
 const Parser = require('rss-parser');
 const parser = new Parser();
 const utils = require('./utils');
+const lark = require('./utils/lark');
+const translate = require('./utils/deepl');
 
 (async () => {
     const repoName = 'db1';
@@ -34,7 +36,25 @@ const utils = require('./utils');
         await utils.commitDb(repoName, 'update wsj');
 
         for (let item of newData) {
-            utils.sendNotification('WSJ', item.title);
+            const zhText = translate(item.title);
+
+            lark.sendPost(process.env.LARK_USER, {
+                title: '',
+                content: [
+                    [{
+                        tag: 'text',
+                        text: item.title
+                    }],
+                    [{
+                        tag: 'text',
+                        text: '---'
+                    }],
+                    [{
+                        tag: 'text',
+                        text: zhText
+                    }]
+                ]
+            });
         }
     }
 })();

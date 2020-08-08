@@ -22,6 +22,7 @@
     "got": "^11.5.1",
     "lodash": "^4.17.19",
     "rss-parser": "^3.9.0",
-    "simple-git": "^2.14.0"
+    "simple-git": "^2.14.0",
+    "tough-cookie": "^4.0.0"
   }
 }
