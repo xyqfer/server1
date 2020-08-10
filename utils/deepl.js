@@ -25,7 +25,7 @@ const req = async (data) => {
         cookieJar,
         body: JSON.stringify(data).replace('"method":', '"method": '),
         headers: {
-            'Content-Type': 'text/plain',
+            'content-type': 'text/plain',
             'referer': homePage,
             'user-agent': ua
         }
@@ -61,6 +61,7 @@ module.exports = async (text = '', source = 'EN', target = 'ZH') => {
             "id": id++
         },
         headers: {
+            'referer': homePage,
             'user-agent': ua
         }
     });
