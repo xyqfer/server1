@@ -2,7 +2,7 @@ const { CookieJar } = require('tough-cookie');
 const got = require('got');
 
 const getId = () => {
-    return 1e4 * Math.round(1e4 * Math.random()) + 2;
+    return 1e4 * Math.round(1e4 * Math.random()) + 1;
 };
 
 const getTimestamp = (jobs) => {
@@ -15,8 +15,9 @@ const getTimestamp = (jobs) => {
     return r + (n - r % n);
 };
 
-const cookieJar = new CookieJar();
+const ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36';
 const homePage = 'https://www.deepl.com/translator';
+const cookieJar = new CookieJar();
 const req = async (data) => {
     const resp = await got('https://www2.deepl.com/jsonrpc', {
         method: 'POST',
@@ -26,7 +27,7 @@ const req = async (data) => {
         headers: {
             'Content-Type': 'text/plain',
             'referer': homePage,
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'
+            'user-agent': ua
         }
     });
 
@@ -37,8 +38,33 @@ module.exports = async (text = '', source = 'EN', target = 'ZH') => {
     let id = getId();
 
     await got(homePage, {
-        cookieJar
+        cookieJar,
+        headers: {
+            'user-agent': ua
+        }
     });
+    await got('https://www.deepl.com/PHP/backend/clientState.php?request_type=jsonrpc&il=EN', {
+        method: 'POST',
+        responseType: 'json',
+        cookieJar,
+        json: {
+            "jsonrpc": "2.0",
+            "method": "getClientState",
+            "params": {
+                "v": "20180814",
+                "clientVars": {
+                    "userCountry": "US",
+                    "showUSBanner": true,
+                    "showAppOnboarding": true
+                }
+            },
+            "id": id++
+        },
+        headers: {
+            'user-agent': ua
+        }
+    });
+
     let resp = await req({
         "jsonrpc": "2.0",
         "method": "LMT_split_into_sentences",
